@@ -1,30 +1,11 @@
 1. Authentication
-2. Student Module
-3. Teacher Module
-4. Class Coordinator (CC) Module
-5. Class Representative (CR) Module
-6. Admin Module
-7. Attendance Management
-8. Assignment Management
-9. Notes Management
-10. Timetable Management
-11. Notification System
-12. Community Module
-13. Results & Performance
-14. Search
-15. Analytics & Reports
-16. Settings & Profile
-17. Future Modules
+2. Teacher Module
+3. Admin Module
+4. Notification System
+5. CR's Module
+
 
 # 1. Authentication
-
-## Student
-
-- Secure login
-- Logout
-- Password reset
-- Change password
-- Profile management
 
 ## Teacher
 
@@ -39,79 +20,21 @@
 
 ---
 
-# 2. Student Module
 
-Students should be able to:
-
-- View attendance
-- View attendance percentage
-- View attendance shortage
-- View attendance prediction
-- View today's classes
-- View timetable
-- View assignments
-- Submit assignments
-- View notes
-- Download notes
-- Receive announcements
-- View notifications
-- View academic calendar
-- View results
-- View profile
-- Edit allowed profile fields
-- Join communities
-- Create posts
-- Comment on posts
-- React to posts
-- Report inappropriate content
-- Search subjects
-- Search notes
-- Search assignments
-
----
-
-# 3. Teacher Module
+# 2. Teacher Module
 
 Teachers should be able to:
 
-- Manage profile
 - View timetable
-- Start attendance session
-- End attendance session
-- View attendance statistics
-- Mark manual attendance (if permitted)
-- Upload notes
-- Edit notes
-- Delete notes
-- Create assignments
-- Edit assignments
-- Delete assignments
-- Review submissions
-- Grade assignments
+- Set the class occupied or free
+- alert the CR
+- request for class allocation
 - Post announcements
-- View student profiles
 - Send notifications
-- Search students
 
 ---
 
-# 4. Class Coordinator (CC)
-
-Additional permissions:
-
-- View complete class attendance
-- View attendance shortage list
-- View academic performance of the class
-- Contact CRs
-- Generate attendance reports
-- Generate performance reports
-- Monitor assignment completion
-- Manage class announcements
-- Approve community announcements (if required)
-
----
-
-# 5. Class Representative (CR)
+# 3. Class Representative (CR)
 
 Additional permissions:
 
@@ -129,38 +52,6 @@ Additional permissions:
 # 6. Admin Module
 
 Admins should be able to:
-
-## User Management
-
-- Add students
-- Remove students
-- Edit students
-- Add teachers
-- Remove teachers
-- Edit teachers
-- Manage admins
-
-## Academic Management
-
-- Create departments
-- Create semesters
-- Create sections
-- Create subjects
-- Assign teachers
-- Assign Class Coordinators (CC)
-- Assign Class Representatives (CR)
-
-## Timetable
-
-- Create timetable
-- Modify timetable
-- Publish timetable
-
-## Attendance
-
-- Configure attendance policies
-- Configure attendance thresholds
-- View attendance analytics
 
 ## Reports
 
@@ -183,7 +74,7 @@ The system should:
 - Store attendance history
 - Allow attendance correction
 - Generate attendance analytics
-- Predict attendance shortage
+- Predict atten dance shortage
 - Notify students with low attendance
 - Support attendance verification mechanisms
 - Support future anti-proxy mechanisms

@@ -1,39 +1,46 @@
-# Project-Athena 
-i would like to create this project as an opportunity to solve the problem i personally have faced in my college. The attendence method is still very primitive and time consuming. Using paper and pen to write names individually makes it prone to proxies and very unreliable way of attendance. Calling out names one by one and then taking attendance takes a lot of time especially in classes with large amount of people.
+# Athena
 
-Many modern methods exist but there are still flaws in those systems. No system can be flawless but having the least amount of flaws would be my goal of this project. 
+## Hospital Management System
 
-Id cards with RF ids can be taken by other students or be kept in the class for attendance and all
-even the fingerprint method can be used the same way.
+Athena is a C++-based Hospital Management System developed as a
+Project-Based Learning (PBL) project. The system combines
+**Data Structures & Algorithms (DSA)** with **Object-Oriented Programming (OOP)**
+to model and manage common hospital operations.
 
-# vision
-Although I had this idea initially as an attendance app but i thought why to stop here and take it many steps ahead as a fully independent university management application.
+The primary goal of Athena is to demonstrate how custom-built data structures
+and OOP principles can be integrated into a single practical application.
 
-# Goals
-- Smart attendance system
-- Modern student portal
-- Teacher dashboard
-- Admin management
-- Assignment management
-- Notes sharing
-- Timetable
-- Analytics
-- Community features
+---
 
-# tech stack
-to be decided
+## Project Overview
 
-# status 
-Planning phase
+A hospital involves multiple interconnected processes such as patient
+registration, OPD management, emergency triage, doctor assignment,
+hospital admission, ward and bed allocation, appointments, billing, and
+discharge.
 
-# Repository Structure
-docs/
-frontend/
-backend/
-database/
-design/
-assets/
-tests/
+Athena aims to bring these processes together into one system while using
+appropriate data structures for different operations.
 
-# liscence 
-private
+The overall patient workflow is:
+
+```text
+Patient Registration
+        ↓
+   OPD / Emergency
+        ↓
+ Doctor Consultation
+        ↓
+ Admission Required?
+     ↙       ↘
+   No         Yes
+   ↓           ↓
+Treatment   Ward/Bed Allocation
+   ↓           ↓
+   └────── Treatment
+             ↓
+           Billing
+             ↓
+          Discharge
+             ↓
+       Record Persistence
