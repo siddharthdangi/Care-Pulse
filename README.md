@@ -587,6 +587,37 @@ Records may include:
 
 ---
 
+---
+
+# Design Feasibility and Limitations
+
+## Technical Feasibility
+
+Care-Pulse can be implemented using C++ because it supports object-oriented programming, file handling, and data structures required for hospital operations. The modular design allows different hospital functions to be managed separately.
+
+## Design Considerations
+
+- **Data consistency:** Patient IDs and doctor IDs should be unique to avoid duplicate records.
+- **Appointment conflicts:** The system should verify doctor availability before confirming an appointment.
+- **Resource allocation:** Ward, room, and bed availability should be checked before admitting a patient.
+- **Error handling:** Invalid input and file access failures should be handled without terminating the program unexpectedly.
+- **Maintainability:** Separating hospital modules into classes and functions can make the code easier to update and test.
+
+## Limitations
+
+- File-based storage may not be suitable for large hospitals with multiple users accessing records simultaneously.
+- The system requires appropriate access controls to protect confidential patient information.
+- Backup and recovery mechanisms are important to prevent permanent loss of hospital records.
+- The accuracy of appointment scheduling, billing, and resource allocation depends on proper validation and implementation.
+
+## Future Improvements
+
+- Database integration for more reliable record management.
+- Role-based access for administrators, doctors, and staff.
+- Automated appointment conflict detection.
+- Backup and recovery support for hospital records.
+
+---
 # Technology Used
 
 ## Core System
