@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 using namespace std;
-
 struct User
 {
     string username;
@@ -20,13 +19,11 @@ int main()
         cout << "2. Exit\n";
         cout << "Enter choice: ";
         cin >> choice;
-
         if (choice == 2)
         {
             cout << "Exiting Care-Pulse...\n";
             break;
         }
-
         if (choice != 1)
         {
             cout << "Invalid choice!\n";
