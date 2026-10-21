@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 using namespace std;
-
 struct Patient
 {
     int id;
@@ -9,112 +8,86 @@ struct Patient
     int severity;
     int arrivalOrder;
 };
-
-class PriorityQueue
-{
-    Patient heap[100];
-    int count;
-    int nextOrder;
-    bool higherPriority(int a, int b) const 
-    {
-        if (heap[a].severity != heap[b].severity)
-            return heap[a].severity > heap[b].severity;
-        return heap[a].arrivalOrder < heap[b].arrivalOrder;
-    }
-    void swapPatients(int a, int b)
-    {
-        Patient temp = heap[a];
-        heap[a] = heap[b];
-        heap[b] = temp;
-    }
-public:
-    PriorityQueue()
-    {
-        count(0), nextOrder(0)
-    }
-
-    void add(Patient p)
-    {
-        if (count == 100)
-        {
-            cout << "Queue is full.\n"; return;
-        }
-        int child = count;
-        p.arrivalOrder = nextOrder++;
-        heap[child] = p;
-        count++;
-        while (child > 0) 
-        {
-            int parent = (child - 1) / 2;
-            if (higherPriority(parent, child))
-                break;
-            swapPatients(parent, child);
-            child = parent;
-        }
-    }
-
-    bool serveNext()
-    {
-        if (count == 0) 
-        {
-            cout << "No patients waiting.\n"; return false;
-        }
-        cout << "Serve: " << heap[0].name << " (ID " << heap[0].id << ")\n";
-        heap[0] = heap[count - 1];
-        count--;
-        int parent = 0;
-        while (true) 
-        {
-            int left = 2 * parent + 1;
-            int right = 2 * parent + 2;
-            int largest = parent;
-            if (left < count && higherPriority(left, largest)) largest = left;
-            if (right < count && higherPriority(right, largest)) largest = right;
-            if (largest == parent) break;
-            swapPatients(parent, largest);
-            parent = largest;
-        }
-        return true;
-    }
-
-    void display() const
-    {
-        cout << "\nPatients in heap order (highest priority first at the top):\n";
-        for (int i=0;i<count;i++)
-            cout << heap[i].name << " (ID " << heap[i].id << "), severity " << heap[i].severity << '\n';
-        if (count == 0) cout << "No patients in queue.\n";
-    }
-};
-
 int main()
 {
-    PriorityQueue emergency;
+    Patient patients[100];
     int n;
-    cout << "How many emergency patients? "; 
+    cout << "How many emergency patients? ";
     cin >> n;
-    if (n > 100)
-        n = 100;
-    for (int i=0;i<n;i++)
+    if (n < 1 || n > 100)
     {
-        Patient p;
-        cout << "\nPatient ID: "; 
-        cin >> p.id;
-        cout << "Patient name: "; 
-        getline(cin >> ws, p.name);
-        cout << "Severity (1 Stable, 2 Moderate, 3 Severe, 4 Critical): ";
-        cin >> p.severity;
-        if (p.severity < 1 || p.severity > 4) 
-        {
-            cout << "Invalid severity; using 1 (Stable).\n"; p.severity=1;
-        }
-        emergency.add(p);
+        cout << "Please enter a number between 1 and 100.\n";
+        return 0;
     }
-    emergency.display();
+    for (int i = 0; i < n; i++)
+    {
+        cout << "\nPatient ID: ";
+        cin >> patients[i].id;
+        cout << "Patient name: ";
+        getline(cin >> ws, patients[i].name);
+        cout << "Severity (1 Stable, 2 Moderate, 3 Severe, 4 Critical): ";
+        cin >> patients[i].severity;
+        if (patients[i].severity < 1 || patients[i].severity > 4)
+        {
+            cout << "Invalid severity. Enter again: ";
+            cin >> patients[i].severity;
+            while (patients[i].severity < 1 || patients[i].severity > 4)
+            {
+                cout << "Enter severity between 1 and 4: ";
+                cin >> patients[i].severity;
+            }
+        }
+        patients[i].arrivalOrder = i;
+    }
+    for (int i = 0; i < n - 1; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            if (patients[i].severity < patients[j].severity || (patients[i].severity == patients[j].severity && patients[i].arrivalOrder > patients[j].arrivalOrder))
+            {
+                Patient temp = patients[i];
+                patients[i] = patients[j];
+                patients[j] = temp;
+            }
+        }
+    }
+    cout << "\n===== EMERGENCY PATIENT QUEUE =====\n";
+    for (int i = 0; i < n; i++)
+    {
+        cout << "\nPatient ID: " << patients[i].id;
+        cout << "\nName: " << patients[i].name;
+        cout << "\nSeverity: " << patients[i].severity;
+        if (patients[i].severity == 1)
+            cout << " (Stable)";
+        else if (patients[i].severity == 2)
+            cout << " (Moderate)";
+        else if (patients[i].severity == 3)
+            cout << " (Severe)";
+        else
+            cout << " (Critical)";
+        cout << "\n";
+    }
     cout << "\nServe the highest-priority patient? (1 Yes, 0 No): ";
     int choice;
     cin >> choice;
-    if (choice == 1) 
-        emergency.serveNext();
-    emergency.display();
+    if (choice == 1)
+    {
+        cout << "\nServing patient: " << patients[0].name;
+        cout << " (ID " << patients[0].id << ")\n";
+        for (int i = 0; i < n - 1; i++)
+        {
+            patients[i] = patients[i + 1];
+        }
+        n--;
+        cout << "\n===== REMAINING PATIENTS =====\n";
+        for (int i = 0; i < n; i++)
+        {
+            cout << patients[i].name
+                 << " (ID " << patients[i].id << ")"
+                 << " - Severity " << patients[i].severity << "\n";
+        }
+        if (n == 0)
+            cout << "No patients waiting.\n";
+    }
     return 0;
 }
