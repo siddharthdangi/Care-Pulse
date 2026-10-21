@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 using namespace std;
@@ -12,7 +11,6 @@ struct User
 
 int main()
 {
-    // Accounts created in advance
     User users[3] = {
         {"staff1", "staff123", "Staff"},
         {"doctor1", "doc123", "Doctor"},
@@ -51,7 +49,7 @@ int main()
         bool loggedIn = false;
         string role = "";
 
-        // Check username and password
+        
         for (int i = 0; i < 3; i++)
         {
             if (users[i].username == username &&
@@ -69,7 +67,7 @@ int main()
             continue;
         }
 
-        // Patients are not allowed to log in
+
         if (role == "Patient")
         {
             cout << "\nAccess denied! Only staff and doctors can log in.\n";
@@ -79,7 +77,7 @@ int main()
         cout << "\nLogin successful!\n";
         cout << "Welcome, " << role << "!\n";
 
-        // Staff dashboard
+
         if (role == "Staff")
         {
             int option;
@@ -129,7 +127,7 @@ int main()
             } while (option != 6);
         }
 
-        // Doctor dashboard
+
         else if (role == "Doctor")
         {
             int option;
