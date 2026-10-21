@@ -2,42 +2,109 @@
 #include <iostream>
 #include <string>
 using namespace std;
-struct Patient { int id; string name; };
-class Queue {
-    struct Node { Patient data; Node* next; Node(Patient p): data(p), next(nullptr) {} };
-    Node *front, *rear;
-public:
-    Queue(): front(nullptr), rear(nullptr) {}
-    void add(Patient p) {
-        Node* n = new Node(p);
-        if (rear == nullptr) front = rear = n;
-        else { rear->next = n; rear = n; }
-    }
-    bool serve() {
-        if (front == nullptr) return false;
-        Node* old = front;
-        cout << "Now serving: " << old->data.name << " (ID " << old->data.id << ")\n";
-        front = front->next;
-        if (front == nullptr) rear = nullptr;
-        delete old; return true;
-    }
-    void display() const {
-        if (!front) { cout << "Queue is empty.\n"; return; }
-        Node* cur = front;
-        while (cur) { cout << cur->data.id << " - " << cur->data.name << '\n'; cur = cur->next; }
-    }
-    ~Queue() { while (serve()) {} }
+
+struct Patient {
+    int id;
+    string name;
 };
-int main() {
-    Queue opd; int n;
-    cout << "How many patients are waiting? "; cin >> n;
-    for (int i=0;i<n;i++) {
-        Patient p; cout << "Patient ID: "; cin >> p.id;
-        cout << "Patient name: "; getline(cin >> ws, p.name); opd.add(p);
+
+class Queue {
+    struct Node {
+        Patient data;
+        Node* next;
+    };
+
+    Node *front, *rear;
+
+public:
+    Queue() {
+        front = rear = nullptr;
     }
-    cout << "\nOPD waiting order:\n"; opd.display();
-    cout << "\nServe the next patient? (1 Yes, 0 No): "; int yes; cin >> yes;
-    if (yes == 1) opd.serve();
-    cout << "Remaining queue:\n"; opd.display();
+
+    void add(Patient p) {
+        Node* n = new Node{p, nullptr};
+
+        if (rear == nullptr)
+            front = rear = n;
+        else {
+            rear->next = n;
+            rear = n;
+        }
+    }
+
+    void serve() {
+        if (front == nullptr) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+
+        Node* temp = front;
+        cout << "Now serving: " << temp->data.name;
+        cout << " (ID " << temp->data.id << ")\n";
+
+        front = front->next;
+
+        if (front == nullptr)
+            rear = nullptr;
+
+        delete temp;
+    }
+
+    void display() {
+        if (front == nullptr) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+
+        Node* temp = front;
+
+        while (temp != nullptr) {
+            cout << temp->data.id << " - ";
+            cout << temp->data.name << endl;
+            temp = temp->next;
+        }
+    }
+
+    ~Queue() {
+        while (front != nullptr) {
+            Node* temp = front;
+            front = front->next;
+            delete temp;
+        }
+    }
+};
+
+int main() {
+    Queue opd;
+    int n;
+
+    cout << "How many patients are waiting? ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        Patient p;
+
+        cout << "Patient ID: ";
+        cin >> p.id;
+
+        cout << "Patient name: ";
+        getline(cin >> ws, p.name);
+
+        opd.add(p);
+    }
+
+    cout << "\nOPD waiting order:\n";
+    opd.display();
+
+    int yes;
+    cout << "\nServe the next patient? (1 Yes, 0 No): ";
+    cin >> yes;
+
+    if (yes == 1)
+        opd.serve();
+
+    cout << "Remaining queue:\n";
+    opd.display();
+
     return 0;
 }
