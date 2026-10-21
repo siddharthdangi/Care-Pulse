@@ -8,18 +8,11 @@ struct User
     string password;
     string role;
 };
-
 int main()
 {
-    User users[3] = {
-        {"staff1", "staff123", "Staff"},
-        {"doctor1", "doc123", "Doctor"},
-        {"patient1", "pat123", "Patient"}
-    };
-
+    User users[3] = {{"staff1", "staff123", "Staff"}, {"doctor1", "doc123", "Doctor"}, {"patient1", "pat123", "Patient"} };
     string username, password;
     int choice;
-
     while (true)
     {
         cout << "\n===== CARE-PULSE LOGIN =====\n";
@@ -39,17 +32,12 @@ int main()
             cout << "Invalid choice!\n";
             continue;
         }
-
         cout << "\nEnter username: ";
         cin >> username;
-
         cout << "Enter password: ";
         cin >> password;
-
         bool loggedIn = false;
-        string role = "";
-
-        
+        string role = "";        
         for (int i = 0; i < 3; i++)
         {
             if (users[i].username == username &&
@@ -60,28 +48,21 @@ int main()
                 break;
             }
         }
-
         if (!loggedIn)
         {
             cout << "\nInvalid username or password!\n";
             continue;
         }
-
-
         if (role == "Patient")
         {
             cout << "\nAccess denied! Only staff and doctors can log in.\n";
             continue;
         }
-
         cout << "\nLogin successful!\n";
         cout << "Welcome, " << role << "!\n";
-
-
         if (role == "Staff")
         {
             int option;
-
             do
             {
                 cout << "\n===== STAFF DASHBOARD =====\n";
@@ -93,7 +74,6 @@ int main()
                 cout << "6. Logout\n";
                 cout << "Enter choice: ";
                 cin >> option;
-
                 switch (option)
                 {
                     case 1:
@@ -123,15 +103,11 @@ int main()
                     default:
                         cout << "Invalid choice!\n";
                 }
-
             } while (option != 6);
         }
-
-
         else if (role == "Doctor")
         {
             int option;
-
             do
             {
                 cout << "\n===== DOCTOR DASHBOARD =====\n";
@@ -139,7 +115,6 @@ int main()
                 cout << "2. Logout\n";
                 cout << "Enter choice: ";
                 cin >> option;
-
                 switch (option)
                 {
                     case 1:
@@ -153,10 +128,8 @@ int main()
                     default:
                         cout << "Invalid choice!\n";
                 }
-
             } while (option != 2);
         }
     }
-
     return 0;
 }
