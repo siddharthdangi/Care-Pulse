@@ -1,0 +1,96 @@
+
+#include <iostream>
+#include <string>
+using namespace std;
+struct Bed {
+    int id;
+    bool occupied;
+    int patientID;
+};
+struct Room {
+    int id;
+    string type;
+    int bedCount;
+    Bed beds[10];
+};
+struct Ward {
+    string name;
+    int roomCount;
+    Room rooms[10];
+};
+int main() {
+    Ward ward;
+    cout << "Enter ward name: ";
+    getline(cin >> ws, ward.name);
+    cout << "How many rooms? (maximum 10): ";
+    cin >> ward.roomCount;
+    if (ward.roomCount < 1)
+    ward.roomCount = 1;
+    if (ward.roomCount > 10)
+    ward.roomCount = 10;
+    int nextBedID = 1;
+    for (int i=0;i<ward.roomCount;i++) {
+        cout << "\nRoom " << i+1 << " ID: ";
+        cin >> ward.rooms[i].id;
+        cout << "Room type (General/Semi-Private/ICU): ";
+        getline(cin >> ws, ward.rooms[i].type);
+        cout << "Number of beds in this room (maximum 10): "; 
+        cin >> ward.rooms[i].bedCount;
+        if (ward.rooms[i].bedCount < 1)
+        ward.rooms[i].bedCount = 1;
+        if (ward.rooms[i].bedCount > 10) 
+        ward.rooms[i].bedCount = 10;
+        for (int j=0;j<ward.rooms[i].bedCount;j++) {
+            ward.rooms[i].beds[j].id = nextBedID++;
+            ward.rooms[i].beds[j].occupied = false;
+            ward.rooms[i].beds[j].patientID = 0;
+        }
+    }
+    int choice;
+    do {
+        cout << "\nWard: " << ward.name
+             << "\n1. Show beds\n2. Allocate a bed\n3. Release a bed\n0. Exit\nChoose: ";
+        cin >> choice;
+        if (choice == 1) {
+            for (int i=0;i<ward.roomCount;i++) {
+                cout << "\nRoom " << ward.rooms[i].id << " (" << ward.rooms[i].type << ")\n";
+                for (int j=0;j<ward.rooms[i].bedCount;j++) {
+                    Bed b = ward.rooms[i].beds[j];
+                    cout << "Bed " << b.id << ": ";
+                    if (b.occupied) cout << "Occupied by patient " << b.patientID;
+                    else cout << "Available";
+                    cout << '\n';
+                }
+            }
+        }
+        else if (choice == 2) {
+            int patientID; cout << "Enter patient ID: "; cin >> patientID;
+            bool allocated = false;
+            for (int i=0;i<ward.roomCount && !allocated;i++)
+                for (int j=0;j<ward.rooms[i].bedCount && !allocated;j++)
+                    if (!ward.rooms[i].beds[j].occupied) {
+                        ward.rooms[i].beds[j].occupied = true;
+                        ward.rooms[i].beds[j].patientID = patientID;
+                        cout << "Allocated bed " << ward.rooms[i].beds[j].id
+                             << " in room " << ward.rooms[i].id << '\n';
+                        allocated = true;
+                    }
+            if (!allocated) cout << "No beds available.\n";
+        }
+        else if (choice == 3) {
+            int bedID; cout << "Enter bed ID to release: "; 
+            cin >> bedID;
+            bool released = false;
+            for (int i=0;i<ward.roomCount;i++)
+                for (int j=0;j<ward.rooms[i].bedCount;j++)
+                    if (ward.rooms[i].beds[j].id == bedID && ward.rooms[i].beds[j].occupied) {
+                        ward.rooms[i].beds[j].occupied = false;
+                        ward.rooms[i].beds[j].patientID = 0;
+                        released = true;
+                    }
+            if (released) cout << "Bed released.\n";
+            else cout << "Bed not found or already available.\n";
+        }
+    } while (choice != 0);
+    return 0;
+}
