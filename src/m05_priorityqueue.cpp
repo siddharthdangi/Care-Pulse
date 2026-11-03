@@ -1,93 +1,340 @@
-#include <iostream>
-#include <string>
-using namespace std;
-struct Patient
+#include "CarePulseModules.h"
+
+class EmergencyHeap
 {
-    int id;
-    string name;
-    int severity;
-    int arrivalOrder;
-};
-int main()
-{
-    Patient patients[100];
+    struct Item
+    {
+        int id, severity, order;
+    };
+
+    Item heap[MAX_RECORDS];
     int n;
-    cout << "How many emergency patients? ";
-    cin >> n;
-    if (n < 1 || n > 100)
+
+    bool higher(const Item& a, const Item& b) const
     {
-        cout << "Please enter a number between 1 and 100.\n";
-        return 0;
+        return a.severity != b.severity
+            ? a.severity > b.severity
+            : a.order < b.order;
     }
-    for (int i = 0; i < n; i++)
+
+    void swapItem(int a, int b)
     {
-        cout << "\nPatient ID: ";
-        cin >> patients[i].id;
-        cout << "Patient name: ";
-        getline(cin >> ws, patients[i].name);
-        cout << "Severity (1 Stable, 2 Moderate, 3 Severe, 4 Critical): ";
-        cin >> patients[i].severity;
-        if (patients[i].severity < 1 || patients[i].severity > 4)
+        Item t = heap[a];
+        heap[a] = heap[b];
+        heap[b] = t;
+    }
+
+    void up(int i)
+    {
+        while (i > 0)
         {
-            cout << "Invalid severity. Enter again: ";
-            cin >> patients[i].severity;
-            while (patients[i].severity < 1 || patients[i].severity > 4)
+            int p = (i - 1) / 2;
+
+            if (higher(heap[p], heap[i]))
             {
-                cout << "Enter severity between 1 and 4: ";
-                cin >> patients[i].severity;
+                break;
             }
+
+            swapItem(p, i);
+            i = p;
         }
-        patients[i].arrivalOrder = i;
     }
-    for (int i = 0; i < n - 1; i++)
+
+    void down(int i)
     {
-        for (int j = i + 1; j < n; j++)
+        while (true)
         {
-            if (patients[i].severity < patients[j].severity || (patients[i].severity == patients[j].severity && patients[i].arrivalOrder > patients[j].arrivalOrder))
+            int l = 2 * i + 1;
+            int r = 2 * i + 2;
+            int b = i;
+
+            if (l < n && higher(heap[l], heap[b]))
             {
-                Patient temp = patients[i];
-                patients[i] = patients[j];
-                patients[j] = temp;
+                b = l;
             }
+
+            if (r < n && higher(heap[r], heap[b]))
+            {
+                b = r;
+            }
+
+            if (b == i)
+            {
+                break;
+            }
+
+            swapItem(i, b);
+            i = b;
         }
     }
-    cout << "\n===== EMERGENCY PATIENT QUEUE =====\n";
-    for (int i = 0; i < n; i++)
+
+public:
+    EmergencyHeap() : n(0)
     {
-        cout << "\nPatient ID: " << patients[i].id;
-        cout << "\nName: " << patients[i].name;
-        cout << "\nSeverity: " << patients[i].severity;
-        if (patients[i].severity == 1)
-            cout << " (Stable)";
-        else if (patients[i].severity == 2)
-            cout << " (Moderate)";
-        else if (patients[i].severity == 3)
-            cout << " (Severe)";
-        else
-            cout << " (Critical)";
-        cout << "\n";
     }
-    cout << "\nServe the highest-priority patient? (1 Yes, 0 No): ";
-    int choice;
-    cin >> choice;
-    if (choice == 1)
+
+    void clear()
     {
-        cout << "\nServing patient: " << patients[0].name;
-        cout << " (ID " << patients[0].id << ")\n";
-        for (int i = 0; i < n - 1; i++)
-        {
-            patients[i] = patients[i + 1];
-        }
-        n--;
-        cout << "\n===== REMAINING PATIENTS =====\n";
+        n = 0;
+    }
+
+    bool contains(int id) const
+    {
         for (int i = 0; i < n; i++)
         {
-            cout << patients[i].name
-                 << " (ID " << patients[i].id << ")"
-                 << " - Severity " << patients[i].severity << "\n";
+            if (heap[i].id == id)
+            {
+                return true;
+            }
         }
-        if (n == 0)
-            cout << "No patients waiting.\n";
+
+        return false;
     }
-    return 0;
+
+    void add(int id, int s, int o)
+    {
+        if (n >= MAX_RECORDS || contains(id))
+        {
+            return;
+        }
+
+        heap[n].id = id;
+        heap[n].severity = s;
+        heap[n].order = o;
+
+        up(n++);
+    }
+
+    int serve()
+    {
+        if (!n)
+        {
+            return -1;
+        }
+
+        int id = heap[0].id;
+        heap[0] = heap[--n];
+
+        if (n)
+        {
+            down(0);
+        }
+
+        return id;
+    }
+
+    void remove(int id)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            if (heap[i].id == id)
+            {
+                heap[i] = heap[--n];
+
+                if (i < n)
+                {
+                    up(i);
+                    down(i);
+                }
+
+                return;
+            }
+        }
+    }
+
+    int count() const
+    {
+        return n;
+    }
+
+    void display(const HospitalData& d) const
+    {
+        if (!n)
+        {
+            cout << "No emergency cases waiting.\n";
+            return;
+        }
+
+        Item copy[MAX_RECORDS];
+        int c = n;
+
+        for (int i = 0; i < n; i++)
+        {
+            copy[i] = heap[i];
+        }
+
+        cout << "Emergency queue (higher severity first):\n";
+
+        for (int k = 0; k < c; k++)
+        {
+            int best = 0;
+
+            for (int j = 1; j < n; j++)
+            {
+                if (higher(heap[j], heap[best]))
+                {
+                    best = j;
+                }
+            }
+
+            int id = heap[best].id;
+            int pi = findPatientIndex(d, id);
+
+            if (pi >= 0)
+            {
+                cout << d.patients[pi].name
+                     << " | ID " << id
+                     << " | " << severityName(d.patients[pi].severity)
+                     << '\n';
+            }
+
+            const_cast<EmergencyHeap*>(this)->remove(id);
+        }
+
+        for (int i = 0; i < c; i++)
+        {
+            const_cast<EmergencyHeap*>(this)->add(
+                copy[i].id,
+                copy[i].severity,
+                copy[i].order
+            );
+        }
+    }
+};
+
+static EmergencyHeap emergencies;
+
+void emergencyRebuild(const HospitalData& d)
+{
+    emergencies.clear();
+
+    for (int i = 0; i < d.patientCount; i++)
+    {
+        if (d.patients[i].status == "Waiting for emergency")
+        {
+            emergencies.add(
+                d.patients[i].id,
+                d.patients[i].severity,
+                d.patients[i].emergencyOrder
+            );
+        }
+    }
+}
+
+bool emergencyContains(int id)
+{
+    return emergencies.contains(id);
+}
+
+int emergencyCount()
+{
+    return emergencies.count();
+}
+
+void emergencyAdd(const HospitalData& d, int id)
+{
+    int i = findPatientIndex(d, id);
+
+    if (i >= 0)
+    {
+        emergencies.add(
+            id,
+            d.patients[i].severity,
+            d.patients[i].emergencyOrder
+        );
+    }
+}
+
+int emergencyServe()
+{
+    return emergencies.serve();
+}
+
+void emergencyRemove(int id)
+{
+    emergencies.remove(id);
+}
+
+void emergencyDisplay(const HospitalData& d)
+{
+    emergencies.display(d);
+}
+
+void addEmergencyCase(HospitalData& d, int id, const string& user)
+{
+    int i = findPatientIndex(d, id);
+
+    if (i < 0)
+    {
+        cout << "Register the patient first.\n";
+        return;
+    }
+
+    if (emergencyContains(id))
+    {
+        cout << "Already in emergency queue.\n";
+        return;
+    }
+
+    int s;
+
+    cout << "Severity (1 Stable, 2 Moderate, 3 Severe, 4 Critical): ";
+    cin >> s;
+
+    if (s < 1 || s > 4)
+    {
+        cout << "Invalid severity.\n";
+        return;
+    }
+
+    pushUndo(d, "Add emergency case");
+
+    opdRemove(id);
+
+    d.patients[i].severity = s;
+    d.patients[i].status = "Waiting for emergency";
+    d.patients[i].emergencyOrder = d.nextArrival++;
+
+    emergencyAdd(d, id);
+
+    saveAll(d);
+
+    auditAction(
+        user,
+        "Staff",
+        "Added emergency case ID " + to_string(id)
+    );
+
+    cout << "Emergency case added. Critical cases are prioritized; "
+         << "equal severity follows arrival order.\n";
+}
+
+void serveEmergencyCase(HospitalData& d, const string& user)
+{
+    if (!emergencyCount())
+    {
+        cout << "No emergency cases waiting.\n";
+        return;
+    }
+
+    pushUndo(d, "Serve emergency case");
+
+    int id = emergencyServe();
+    int i = findPatientIndex(d, id);
+
+    if (i >= 0)
+    {
+        d.patients[i].status = "Emergency case attended";
+    }
+
+    saveAll(d);
+
+    auditAction(
+        user,
+        "Staff",
+        "Served emergency case ID " + to_string(id)
+    );
+
+    cout << "Emergency queue next case served: patient ID "
+         << id << ". Clinical decisions remain with medical staff.\n";
 }
