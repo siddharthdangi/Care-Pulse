@@ -789,3 +789,64 @@ The source code and project documentation are maintained on GitHub.
 # License
 
 This project is developed for academic purposes, demonstration, and further development of the Care-Pulse Hospital Management System.
+
+
+# Care-Pulse — Original Modules Updated and Multilinked
+
+This version keeps the original M01–M11 module filenames and connects them through `main.cpp`. The added features are implemented in the relevant module source files, not in a separate `HospitalController.cpp` replacement.
+
+## Files
+
+- `main.cpp` — login, role menus, and module coordination
+- `CarePulseModules.h` — shared record types and interfaces used to multilink the modules
+- `m01_auth.cpp` — password hashing and password rules
+- `m01_Person.cpp`, `m01_Patient.cpp`, `m01_Doctor.cpp`, `m01_Staff.cpp` — shared OOP hierarchy
+- `m02_linkedlist.cpp` — shared patient registration/editing and linked-list index
+- `m03_queue.cpp` — OPD FIFO queue and waiting-time estimate
+- `m04_stack.cpp` — undo stack with data snapshots
+- `m05_priorityqueue.cpp` — emergency binary heap; severity first, earlier arrival for ties
+- `m06_bst.cpp` — patient ID search
+- `m07_hashtable.cpp` — doctor ID hash table and doctor registration
+- `m08_ward.cpp` — bed suggestions, allocation, discharge/release
+- `m09_bill.cpp` — billing with the project's sample 5% tax assumption
+- `m10_sorting.cpp` — appointment sorting, binary search, and next-24-hour reminders
+- `m11_persistence.cpp` — automatic load/save and audit log
+- `original_phase2_backup/` — unchanged copies of the original supplied Phase-II files
+
+## Build and run on Windows
+
+Open the project folder in VS Code. In Terminal, run:
+
+```powershell
+g++ -std=c++11 -Wall -Wextra -pedantic main.cpp m01_auth.cpp m01_Person.cpp m01_Patient.cpp m01_Doctor.cpp m01_Staff.cpp m02_linkedlist.cpp m03_queue.cpp m04_stack.cpp m05_priorityqueue.cpp m06_bst.cpp m07_hashtable.cpp m08_ward.cpp m09_bill.cpp m10_sorting.cpp m11_persistence.cpp -o CarePulse.exe
+.\CarePulse.exe
+```
+
+Compile all these source files together. Do not compile the `original_phase2_backup` files into the same build; those are reference copies and include their original standalone structure.
+
+## Accounts and permissions
+
+- First run asks you to create the first Staff account.
+- Password: at least 8 characters, one uppercase letter, one lowercase letter, and one digit.
+- Staff can register/edit patients, add doctors, manage queues, beds, appointments, bills, accounts, undo, and view reports.
+- Doctors can log in to view patient details and queues; they have view-only access.
+- Patients cannot log in and cannot be given an account.
+- Passwords use a unique salt and repeated SHA-256 hashing. This is educational code, not production-grade authentication.
+
+## Implemented additions
+
+- One shared patient record is used by the linked list, OPD queue, emergency priority queue, BST, bed management, bills, appointments, alerts, summary, and patient journey view.
+- OPD wait estimate uses queue length multiplied by a configurable average consultation time.
+- Bed suggestion uses recorded severity (Critical/Severe -> ICU, Moderate -> Semi-Private, Stable -> General); staff confirms allocation.
+- Daily summary includes today's audit-action count and current hospital totals.
+- Alerts flag OPD queues over 5, incomplete patient name/diagnosis, unassigned doctors, and no free beds.
+- Appointment reminders show appointments scheduled in the next 24 hours when staff opens Reminders or Alerts; there are no background notifications.
+- Patient journey/status tracking is available by patient ID.
+- Undo restores the shared records and rebuilds the data-structure indexes for the most recent action during the current session. Audit history is append-only.
+- Patients, doctors, beds, appointments, bills, accounts, and settings are saved to text files.
+- `audit.log` records timestamp, username, role, action, and old/new values for patient edits.
+
+## Data files and safety
+
+Data files are created in the current working folder: `patients.txt`, `doctors.txt`, `beds.txt`, `appointments.txt`, `bills.txt`, `users.txt`, `settings.txt`, and `audit.log`. Do not enter real patient or other sensitive information. This is a student prototype, not a production hospital system. The 5% tax is only a project assumption.
+
