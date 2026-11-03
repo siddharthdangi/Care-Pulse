@@ -1,86 +1,122 @@
-#include <iostream>
-#include <string>
-using namespace std;
-struct Node
+#include "CarePulseModules.h"
+
+class UndoStack
 {
-    string action;
-    Node* next;
-};
-class Stack
-{
-    Node* top;
-public:
-    Stack()
+    struct Node
     {
-        top = NULL;
-    }
-    void push(string action)
-    {
-        Node* newNode = new Node;
-        newNode->action = action;
-        newNode->next = top;
-        top = newNode;
-    }
-    void display()
-    {
-        Node* temp = top;
-        if (top == NULL)
-        {
-            cout << "No actions saved.\n";
-            return;
-        }
-        cout << "Actions (latest first):\n";
-        while (temp != NULL)
-        {
-            cout << temp->action << endl;
-            temp = temp->next;
-        }
-    }
-    void undo()
-    {
-        if (top == NULL)
-        {
-            cout << "No action to undo.\n";
-            return;
-        }
-        Node* temp = top;
-        cout << "Undo action: " << top->action << endl;
-        top = top->next;
-        delete temp;
-    }
-    ~Stack()
-    {
-        while (top != NULL)
-        {
-            Node* temp = top;
-            top = top->next;
-            delete temp;
-        }
-    }
-};
-int main()
-{
-    Stack s;
-    int n;
-    cout << "How many actions? ";
-    cin >> n;
-    for (int i = 0; i < n; i++)
-    {
+        HospitalData snapshot;
         string action;
-        cout << "Enter action " << i + 1 << ": ";
-        getline(cin >> ws, action);
-        s.push(action);
-    }
-    cout << "\nSaved actions:\n";
-    s.display();
-    int choice;
-    cout << "\nUndo latest action? (1 = Yes, 0 = No): ";
-    cin >> choice;
-    if (choice == 1)
+        Node* next;
+
+        Node(const HospitalData& d, const string& a, Node* n)
+            : snapshot(d), action(a), next(n)
+        {
+        }
+    };
+
+    Node* topNode;
+    int total;
+
+public:
+    UndoStack() : topNode(NULL), total(0)
     {
-        s.undo();
     }
-    cout << "\nActions after undo:\n";
-    s.display();
-    return 0;
+
+    ~UndoStack()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        while (topNode)
+        {
+            Node* t = topNode;
+            topNode = topNode->next;
+            delete t;
+        }
+
+        total = 0;
+    }
+
+    void push(const HospitalData& d, const string& a)
+    {
+        topNode = new Node(d, a, topNode);
+        total++;
+
+        if (total > MAX_UNDO)
+        {
+            Node* n = topNode;
+
+            while (n->next && n->next->next)
+            {
+                n = n->next;
+            }
+
+            if (n->next)
+            {
+                delete n->next;
+                n->next = NULL;
+                total--;
+            }
+        }
+    }
+
+    bool pop(HospitalData& d, string& a)
+    {
+        if (!topNode)
+        {
+            return false;
+        }
+
+        Node* t = topNode;
+
+        d = t->snapshot;
+        a = t->action;
+
+        topNode = t->next;
+
+        delete t;
+        total--;
+
+        return true;
+    }
+
+    void display() const
+    {
+        if (!topNode)
+        {
+            cout << "No actions available to undo.\n";
+            return;
+        }
+
+        cout << "Recent reversible actions (newest first):\n";
+
+        for (Node* n = topNode; n; n = n->next)
+        {
+            cout << "- " << n->action << '\n';
+        }
+    }
+};
+
+static UndoStack undoStack;
+
+void pushUndo(const HospitalData& d, const string& a)
+{
+    undoStack.push(d, a);
+}
+
+bool undoLast(HospitalData& d, string& a)
+{
+    return undoStack.pop(d, a);
+}
+
+void clearUndo()
+{
+    undoStack.clear();
+}
+
+void showUndoHistory()
+{
+    undoStack.display();
 }
