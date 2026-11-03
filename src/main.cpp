@@ -37,8 +37,8 @@ static bool authenticate(HospitalData& d)
             }
 
             break;
-        }
-        while (true);
+
+        } while (true);
 
         u.role = "Staff";
         u.salt = makeSalt();
@@ -179,9 +179,9 @@ static void showDoctors(const HospitalData& d)
 
     for (int i = 0; i < d.doctorCount; i++)
     {
-        cout << "ID " << d.doctors[i].id
-             << " | " << d.doctors[i].name
-             << " | " << d.doctors[i].specialization << '\n';
+        cout << "ID " << d.doctors[i].id << " | "
+             << d.doctors[i].name << " | "
+             << d.doctors[i].specialization << '\n';
     }
 }
 
@@ -203,13 +203,10 @@ void showDailySummary(const HospitalData& d)
     }
 
     for (int i = 0; i < d.billCount; i++)
-    {
         revenue += d.bills[i].total;
-    }
 
     time_t now = time(NULL);
-    tm* t = localtime(&now);
-
+    tm *t = localtime(&now);
     char today[11];
 
     strftime(today, sizeof(today), "%Y-%m-%d", t);
@@ -249,15 +246,11 @@ void showAlerts(const HospitalData& d)
     {
         if (d.patients[i].name.empty() ||
             d.patients[i].diagnosis.empty())
-        {
             incomplete++;
-        }
 
         if (d.patients[i].doctorID == 0 &&
             d.patients[i].status != "Discharged")
-        {
             unassigned++;
-        }
     }
 
     cout << "\n===== CARE-PULSE ALERTS =====\n";
@@ -300,9 +293,7 @@ void showAlerts(const HospitalData& d)
     showReminders(d);
 
     if (!any)
-    {
         cout << "No queue, record, assignment, or bed alerts at this time.\n";
-    }
 }
 
 void showJourney(const HospitalData& d, int id)
@@ -357,9 +348,7 @@ static void doctorMenu(HospitalData& d)
         cin >> c;
 
         if (c == 1)
-        {
             showAllPatients(d);
-        }
         else if (c == 2)
         {
             int id;
@@ -370,23 +359,15 @@ static void doctorMenu(HospitalData& d)
             showPatient(d, id);
         }
         else if (c == 3)
-        {
             opdDisplay(d);
-        }
         else if (c == 4)
-        {
             emergencyDisplay(d);
-        }
         else if (c == 5)
-        {
             showAppointments(d);
-        }
         else if (c != 0)
-        {
             cout << "Invalid choice.\n";
-        }
-    }
-    while (c != 0);
+
+    } while (c != 0);
 }
 
 static void staffMenu(HospitalData& d)
@@ -614,8 +595,8 @@ static void staffMenu(HospitalData& d)
             default:
                 cout << "Invalid choice.\n";
         }
-    }
-    while (c != 0);
+
+    } while (c != 0);
 }
 
 int main()
