@@ -1,31 +1,70 @@
-#include <iostream>
+#include "CarePulseModules.h"
 #include <iomanip>
-#include <string>
-using namespace std;
-int main() {
-    int id, n;
-    double amount, total = 0;
-    cout << "Enter patient ID: ";
-    cin >> id;
-    cout << "Enter number of bill items: ";
-    cin >> n;
-    for (int i = 0; i < n; i++) {
-        string name;
-        cout << "\nEnter item name: ";
-        cin >> ws;
-        getline(cin, name);
-        cout << "Enter amount: ";
-        cin >> amount;
-        if (amount < 0)
-            amount = 0;
-        total += amount;
+
+void createBill(HospitalData& d, int id, const string& user)
+{
+    if (findPatientIndex(d, id) < 0)
+    {
+        cout << "Patient not found.\n";
+        return;
     }
-    double tax = total * 0.05;
-    cout << fixed << setprecision(2);
-    cout << "\n--- HOSPITAL BILL ---\n";
-    cout << "Patient ID: " << id << endl;
-    cout << "Subtotal: Rs " << total << endl;
-    cout << "Tax (5%): Rs " << tax << endl;
-    cout << "Total: Rs " << total + tax << endl;
-    return 0;
+
+    if (d.billCount >= MAX_RECORDS)
+    {
+        cout << "Bill list is full.\n";
+        return;
+    }
+
+    Bill b;
+    b.patientID = id;
+
+    cout << "Bill description: ";
+    getline(cin >> ws, b.description);
+
+    cout << "Subtotal amount: ";
+    cin >> b.subtotal;
+
+    if (b.subtotal < 0)
+    {
+        cout << "Amount cannot be negative.\n";
+        return;
+    }
+
+    b.tax = b.subtotal * 0.05;
+    b.total = b.subtotal + b.tax;
+
+    pushUndo(d, "Create bill");
+
+    d.bills[d.billCount++] = b;
+
+    saveAll(d);
+
+    auditAction(
+        user,
+        "Staff",
+        "Created bill for patient ID " + to_string(id)
+    );
+
+    cout << fixed << setprecision(2)
+         << "Subtotal: " << b.subtotal
+         << "\nProject tax (5%): " << b.tax
+         << "\nTotal: " << b.total << "\n";
+}
+
+void showBills(const HospitalData& d)
+{
+    if (!d.billCount)
+    {
+        cout << "No bills recorded.\n";
+        return;
+    }
+
+    for (int i = 0; i < d.billCount; i++)
+    {
+        cout << fixed << setprecision(2)
+             << "Patient ID " << d.bills[i].patientID
+             << " | " << d.bills[i].description
+             << " | Total: " << d.bills[i].total
+             << '\n';
+    }
 }
