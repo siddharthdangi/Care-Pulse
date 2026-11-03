@@ -1,114 +1,233 @@
-// MODULE 10: Appointment sorting using merge sort and searching by patient ID
-#include <iostream>
-#include <string>
-using namespace std;
+#include "CarePulseModules.h"
+#include <ctime>
+#include <cctype>
 
-struct Appointment {
-    int patientID;
-    string patientName, date, time;
-};
+static bool before(const Appointment& a, const Appointment& b)
+{
+    if (a.date != b.date)
+    {
+        return a.date < b.date;
+    }
 
-void merge(Appointment a[], int l, int m, int r) {
-    Appointment temp[100];
-    int i = l, j = m + 1, k = l;
+    return a.time < b.time;
+}
 
-    while (i <= m && j <= r) {
-        if (a[i].date < a[j].date ||
-            (a[i].date == a[j].date && a[i].time <= a[j].time))
-            temp[k++] = a[i++];
+void showAppointments(const HospitalData& d)
+{
+    if (!d.appointmentCount)
+    {
+        cout << "No appointments recorded.\n";
+        return;
+    }
+
+    Appointment a[MAX_RECORDS];
+
+    for (int i = 0; i < d.appointmentCount; i++)
+    {
+        a[i] = d.appointments[i];
+    }
+
+    for (int i = 1; i < d.appointmentCount; i++)
+    {
+        Appointment key = a[i];
+        int j = i - 1;
+
+        while (j >= 0 && before(key, a[j]))
+        {
+            a[j + 1] = a[j];
+            j--;
+        }
+
+        a[j + 1] = key;
+    }
+
+    cout << "Appointments sorted by date and time:\n";
+
+    for (int i = 0; i < d.appointmentCount; i++)
+    {
+        cout << a[i].date << " " << a[i].time
+             << " | Patient " << a[i].patientID
+             << " | " << a[i].note << '\n';
+    }
+}
+
+void addAppointment(HospitalData& d, int id, const string& user)
+{
+    if (findPatientIndex(d, id) < 0)
+    {
+        cout << "Patient not found.\n";
+        return;
+    }
+
+    if (d.appointmentCount >= MAX_RECORDS)
+    {
+        cout << "Appointment list full.\n";
+        return;
+    }
+
+    Appointment a;
+    a.patientID = id;
+
+    cout << "Date (YYYYMMDD): ";
+    cin >> a.date;
+
+    cout << "Time (HHMM): ";
+    cin >> a.time;
+
+    if (a.date.size() != 8 || a.time.size() != 4)
+    {
+        cout << "Use YYYYMMDD and HHMM.\n";
+        return;
+    }
+
+    for (size_t i = 0; i < a.date.size(); i++)
+    {
+        if (!isdigit(a.date[i]))
+        {
+            cout << "Date must contain digits only.\n";
+            return;
+        }
+    }
+
+    for (size_t i = 0; i < a.time.size(); i++)
+    {
+        if (!isdigit(a.time[i]))
+        {
+            cout << "Time must contain digits only.\n";
+            return;
+        }
+    }
+
+    cout << "Appointment note: ";
+    getline(cin >> ws, a.note);
+
+    pushUndo(d, "Add appointment");
+
+    d.appointments[d.appointmentCount++] = a;
+
+    saveAll(d);
+
+    auditAction(
+        user,
+        "Staff",
+        "Added appointment for patient ID " + to_string(id)
+    );
+
+    cout << "Appointment saved.\n";
+}
+
+void searchAppointment(const HospitalData& d, int id)
+{
+    int ids[MAX_RECORDS], n = 0;
+
+    for (int i = 0; i < d.appointmentCount; i++)
+    {
+        ids[n++] = i;
+    }
+
+    for (int i = 1; i < n; i++)
+    {
+        int key = ids[i];
+        int j = i - 1;
+
+        while (j >= 0 &&
+               d.appointments[ids[j]].patientID >
+               d.appointments[key].patientID)
+        {
+            ids[j + 1] = ids[j];
+            j--;
+        }
+
+        ids[j + 1] = key;
+    }
+
+    int lo = 0, hi = n - 1, found = -1;
+
+    while (lo <= hi)
+    {
+        int mid = (lo + hi) / 2;
+        int pid = d.appointments[ids[mid]].patientID;
+
+        if (pid == id)
+        {
+            found = mid;
+            break;
+        }
+
+        if (pid < id)
+        {
+            lo = mid + 1;
+        }
         else
-            temp[k++] = a[j++];
+        {
+            hi = mid - 1;
+        }
     }
 
-    while (i <= m) temp[k++] = a[i++];
-    while (j <= r) temp[k++] = a[j++];
-
-    for (i = l; i <= r; i++)
-        a[i] = temp[i];
-}
-
-void mergeSort(Appointment a[], int l, int r) {
-    if (l >= r) return;
-
-    int m = (l + r) / 2;
-    mergeSort(a, l, m);
-    mergeSort(a, m + 1, r);
-    merge(a, l, m, r);
-}
-
-void sortByID(Appointment a[], int n) {
-    for (int i = 0; i < n - 1; i++)
-        for (int j = 0; j < n - i - 1; j++)
-            if (a[j].patientID > a[j + 1].patientID) {
-                Appointment temp = a[j];
-                a[j] = a[j + 1];
-                a[j + 1] = temp;
-            }
-}
-
-int binarySearch(Appointment a[], int n, int id) {
-    int l = 0, r = n - 1;
-
-    while (l <= r) {
-        int m = (l + r) / 2;
-
-        if (a[m].patientID == id) return m;
-        if (a[m].patientID < id) l = m + 1;
-        else r = m - 1;
+    if (found < 0)
+    {
+        cout << "No appointment found for patient ID "
+             << id << ".\n";
+        return;
     }
 
-    return -1;
-}
-
-int main() {
-    Appointment a[100];
-    int n;
-
-    cout << "How many appointments (max 100)? ";
-    cin >> n;
-
-    if (n < 1 || n > 100) {
-        cout << "Invalid number of appointments.\n";
-        return 0;
-    }
-
-    for (int i = 0; i < n; i++) {
-        cout << "\nPatient ID: ";
-        cin >> a[i].patientID;
-
-        cout << "Patient name: ";
-        getline(cin >> ws, a[i].patientName);
-
-        cout << "Date (YYYYMMDD): ";
-        cin >> a[i].date;
-
-        cout << "Time (HHMM): ";
-        cin >> a[i].time;
-    }
-
-    mergeSort(a, 0, n - 1);
-
-    cout << "\nAppointments sorted by date and time:\n";
+    cout << "Appointments for patient ID " << id << ":\n";
 
     for (int i = 0; i < n; i++)
-        cout << a[i].date << " " << a[i].time
-             << " | ID " << a[i].patientID
-             << " | " << a[i].patientName << '\n';
+    {
+        if (d.appointments[ids[i]].patientID == id)
+        {
+            cout << d.appointments[ids[i]].date
+                 << " " << d.appointments[ids[i]].time
+                 << " | " << d.appointments[ids[i]].note
+                 << '\n';
+        }
+    }
+}
 
-    sortByID(a, n);
+void showReminders(const HospitalData& d)
+{
+    time_t now = time(NULL);
+    bool any = false;
 
-    int id;
-    cout << "\nEnter patient ID to search: ";
-    cin >> id;
+    cout << "Appointment reminders for the next 24 hours:\n";
 
-    int pos = binarySearch(a, n, id);
+    for (int i = 0; i < d.appointmentCount; i++)
+    {
+        const Appointment& a = d.appointments[i];
 
-    if (pos != -1)
-        cout << "Found appointment for " << a[pos].patientName
-             << " on " << a[pos].date
-             << " at " << a[pos].time << '\n';
-    else
-        cout << "No appointment found for that ID.\n";
+        if (a.date.size() != 8 || a.time.size() != 4)
+        {
+            continue;
+        }
 
-    return 0;
+        tm ap = {};
+
+        ap.tm_year = atoi(a.date.substr(0, 4).c_str()) - 1900;
+        ap.tm_mon = atoi(a.date.substr(4, 2).c_str()) - 1;
+        ap.tm_mday = atoi(a.date.substr(6, 2).c_str());
+        ap.tm_hour = atoi(a.time.substr(0, 2).c_str());
+        ap.tm_min = atoi(a.time.substr(2, 2).c_str());
+        ap.tm_isdst = -1;
+
+        time_t when = mktime(&ap);
+        double seconds = difftime(when, now);
+
+        if (seconds >= 0 && seconds <= 24 * 60 * 60)
+        {
+            int pi = findPatientIndex(d, a.patientID);
+
+            cout << "Patient ID " << a.patientID
+                 << (pi >= 0 ? " - " + d.patients[pi].name : "")
+                 << " | " << a.date << " " << a.time
+                 << " | " << a.note << '\n';
+
+            any = true;
+        }
+    }
+
+    if (!any)
+    {
+        cout << "No appointments scheduled within the next 24 hours.\n";
+    }
 }
