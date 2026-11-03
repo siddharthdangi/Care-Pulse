@@ -1,85 +1,130 @@
-#include <iostream>
-#include <string>
-using namespace std;
-const int SIZE = 10;
-struct Doctor {
-    int id;
-    string name, specialization;
-};
-struct Node {
-    Doctor data;
-    Node* next;
-    Node(Doctor d) {
-        data = d;
-        next = nullptr;
+#include "CarePulseModules.h"
+
+class DoctorHashTable
+{
+    struct Node
+    {
+        int id, index;
+        Node* next;
+
+        Node(int a, int b, Node* n) : id(a), index(b), next(n)
+        {
+        }
+    };
+
+    Node* table[101];
+
+    int hash(int id) const
+    {
+        return id % 101;
     }
-};
-class HashTable {
-    Node* table[SIZE];
+
 public:
-    HashTable() {
-        for (int i = 0; i < SIZE; i++)
-            table[i] = nullptr;
-    }
-    int hash(int id) {
-        return id % SIZE;
-    }
-    void add(Doctor d) {
-        int index = hash(d.id);
-        Node* temp = table[index];
-        while (temp != nullptr) {
-            if (temp->data.id == d.id) {
-                temp->data = d;
-                return;
-            }
-            temp = temp->next;
+    DoctorHashTable()
+    {
+        for (int i = 0; i < 101; i++)
+        {
+            table[i] = NULL;
         }
-        Node* newNode = new Node(d);
-        newNode->next = table[index];
-        table[index] = newNode;
     }
-    void search(int id) {
-        Node* temp = table[hash(id)];
-        while (temp != nullptr) {
-            if (temp->data.id == id) {
-                cout << "Doctor Name: " << temp->data.name << endl;
-                cout << "Specialization: "
-                     << temp->data.specialization << endl;
-                return;
-            }
-            temp = temp->next;
-        }
-        cout << "Doctor not found." << endl;
+
+    ~DoctorHashTable()
+    {
+        clear();
     }
-    ~HashTable() {
-        for (int i = 0; i < SIZE; i++) {
-            Node* temp = table[i];
-            while (temp != nullptr) {
-                Node* old = temp;
-                temp = temp->next;
-                delete old;
+
+    void clear()
+    {
+        for (int i = 0; i < 101; i++)
+        {
+        while (table[i])
+            {
+                Node* t = table[i];
+                table[i] = table[i]->next;
+                delete t;
             }
         }
+    }
+
+    void reset(const HospitalData& d)
+    {
+        clear();
+
+        for (int i = 0; i < d.doctorCount; i++)
+        {
+            int h = hash(d.doctors[i].id);
+
+            table[h] = new Node(
+                d.doctors[i].id,
+                i,
+                table[h]
+            );
+        }
+    }
+
+    int find(int id) const
+    {
+        for (Node* n = table[hash(id)]; n; n = n->next)
+        {
+            if (n->id == id)
+            {
+                return n->index;
+            }
+        }
+
+        return -1;
     }
 };
-int main() {
-    HashTable doctors;
-    int n;
-    cout << "How many doctors? ";
-    cin >> n;
-    for (int i = 0; i < n; i++) {
-        Doctor d;
-        cout << "Doctor ID: ";
-        cin >> d.id;
-        cout << "Doctor Name: ";
-        getline(cin >> ws, d.name);
-        cout << "Specialization: ";
-        getline(cin >> ws, d.specialization);
-        doctors.add(d);
+
+static DoctorHashTable doctorTable;
+
+void hashRebuild(const HospitalData& d)
+{
+    doctorTable.reset(d);
+}
+
+int hashDoctorIndex(int id)
+{
+    return doctorTable.find(id);
+}
+
+void addDoctor(HospitalData& d, const string& user)
+{
+    if (d.doctorCount >= MAX_RECORDS)
+    {
+        cout << "Doctor list is full.\n";
+        return;
     }
-    int id;
-    cout << "\nEnter doctor ID to search: ";
-    cin >> id;
-    doctors.search(id);
-    return 0;
+
+    Doctor x;
+
+    cout << "Doctor ID: ";
+    cin >> x.id;
+
+    if (x.id <= 0 || findDoctorIndex(d, x.id) >= 0)
+    {
+        cout << "Invalid or duplicate doctor ID.\n";
+        return;
+    }
+
+    cout << "Doctor name: ";
+    getline(cin >> ws, x.name);
+
+    cout << "Specialization: ";
+    getline(cin >> ws, x.specialization);
+
+    pushUndo(d, "Add doctor");
+
+    d.doctors[d.doctorCount++] = x;
+
+    hashRebuild(d);
+    saveAll(d);
+
+    auditAction(
+        user,
+        "Staff",
+        "Added doctor ID " + to_string(x.id)
+    );
+
+    cout << "Doctor added.\n";
 }
