@@ -7,13 +7,13 @@ Care-Pulse is a **Hospital Management System developed in C++**. It is designed 
 The system uses **Data Structures and Algorithms (DSA)** and **Object-Oriented Programming (OOP)** to manage:
 
 * Patients
-* Doctors
+* Doctors 
 * Appointments
 * OPD waiting queues
 * Emergency cases
 * Admissions
 * Wards, rooms, and beds
-* Billing
+* Billings
 * Patient discharge
 * Hospital records
 
