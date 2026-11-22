@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Medforge/Project-Athena/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

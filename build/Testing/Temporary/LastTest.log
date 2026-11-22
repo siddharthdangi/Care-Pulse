@@ -1,0 +1,19 @@
+Start testing: Nov 22 11:58 India Standard Time
+----------------------------------------------------------
+1/1 Testing: care-pulse-self-tests
+1/1 Test: care-pulse-self-tests
+Command: "C:/Medforge/Project-Athena/build/care-pulse.exe" "--self-test"
+Directory: C:/Medforge/Project-Athena/build
+"care-pulse-self-tests" start time: Nov 22 11:58 India Standard Time
+Output:
+----------------------------------------------------------
+Care-Pulse self-tests passed.
+<end of output>
+Test time =   1.00 sec
+----------------------------------------------------------
+Test Passed.
+"care-pulse-self-tests" end time: Nov 22 11:58 India Standard Time
+"care-pulse-self-tests" time elapsed: 00:00:01
+----------------------------------------------------------
+
+End testing: Nov 22 11:58 India Standard Time
