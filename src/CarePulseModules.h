@@ -9,7 +9,7 @@ using namespace std;
 const int MAX_RECORDS = 200;
 const int MAX_UNDO = 20;
 
-struct Person
+struct person
 {
     int id, age;
     string name;
