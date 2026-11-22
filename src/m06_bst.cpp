@@ -12,9 +12,7 @@ class PatientBST
         {
         }
     };
-
     Node* root;
-
     Node* insert(Node* n, int id)
     {
         if (!n)
@@ -65,7 +63,6 @@ public:
     PatientBST() : root(NULL)
     {
     }
-
     ~PatientBST()
     {
         clear(root);
