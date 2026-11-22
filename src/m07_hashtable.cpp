@@ -64,6 +64,7 @@ public:
 
     int find(int id) const
     {
+        int c=-1;
         for (Node* n = table[hash(id)]; n; n = n->next)
         {
             if (n->id == id)
@@ -71,8 +72,7 @@ public:
                 return n->index;
             }
         }
-
-        return -1;
+        return c;
     }
 };
 
