@@ -217,7 +217,6 @@ void loadAll(HospitalData& d)
             x.roomType = p[2];
             x.occupied = atoi(p[3].c_str()) != 0;
             x.patientID = atoi(p[4].c_str());
-
             d.beds[d.bedCount++] = x;
         }
     }
@@ -235,7 +234,6 @@ void loadAll(HospitalData& d)
             x.date = p[1];
             x.time = p[2];
             x.note = p[3];
-
             d.appointments[d.appointmentCount++] = x;
         }
     }
