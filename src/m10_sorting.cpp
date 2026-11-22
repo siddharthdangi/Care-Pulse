@@ -1,7 +1,6 @@
 #include "CarePulseModules.h"
 #include <ctime>
 #include <cctype>
-
 static bool before(const Appointment& a, const Appointment& b)
 {
     if (a.date != b.date)
@@ -11,7 +10,6 @@ static bool before(const Appointment& a, const Appointment& b)
 
     return a.time < b.time;
 }
-
 void showAppointments(const HospitalData& d)
 {
     if (!d.appointmentCount)
@@ -19,7 +17,6 @@ void showAppointments(const HospitalData& d)
         cout << "No appointments recorded.\n";
         return;
     }
-
     Appointment a[MAX_RECORDS];
 
     for (int i = 0; i < d.appointmentCount; i++)
@@ -58,7 +55,6 @@ void addAppointment(HospitalData& d, int id, const string& user)
         cout << "Patient not found.\n";
         return;
     }
-
     if (d.appointmentCount >= MAX_RECORDS)
     {
         cout << "Appointment list full.\n";
@@ -184,7 +180,6 @@ void searchAppointment(const HospitalData& d, int id)
         }
     }
 }
-
 void showReminders(const HospitalData& d)
 {
     time_t now = time(NULL);
