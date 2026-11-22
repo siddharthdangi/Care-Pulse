@@ -24,7 +24,6 @@ void showBeds(const HospitalData& d)
 void addBeds(HospitalData& d, const string& user)
 {
     int n;
-
     cout << "How many beds to add? ";
     cin >> n;
 
@@ -60,7 +59,6 @@ void addBeds(HospitalData& d, const string& user)
 
         d.beds[d.bedCount++] = b;
     }
-
     saveAll(d);
 
     auditAction(user, "Staff", "Added " + to_string(n) + " beds");
@@ -146,7 +144,6 @@ void allocateBed(HospitalData& d, int id, const string& user)
 
     d.beds[chosen].occupied = true;
     d.beds[chosen].patientID = id;
-
     p.bedID = d.beds[chosen].id;
     p.admitted = true;
     p.status = "Admitted";
