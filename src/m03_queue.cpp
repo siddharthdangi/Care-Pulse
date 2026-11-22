@@ -15,7 +15,6 @@ class OPDLinkedQueue
     Node* frontNode;
     Node* rearNode;
     int total;
-
 public:
     OPDLinkedQueue() : frontNode(NULL), rearNode(NULL), total(0)
     {
@@ -41,7 +40,8 @@ public:
 
     bool contains(int id) const
     {
-        for (Node* n = frontNode; n; n = n->next)
+        Node *n;
+        for (n = frontNode; n; n = n->next)
         {
             if (n->id == id)
             {
