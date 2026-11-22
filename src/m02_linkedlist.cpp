@@ -45,7 +45,6 @@ public:
         else
         {
             Node* c = head;
-
             while (c->next)
             {
                 c = c->next;
