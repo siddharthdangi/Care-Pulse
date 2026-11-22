@@ -47,7 +47,6 @@ class EmergencyHeap
             int l = 2 * i + 1;
             int r = 2 * i + 2;
             int b = i;
-
             if (l < n && higher(heap[l], heap[b]))
             {
                 b = l;
@@ -101,7 +100,6 @@ public:
         heap[n].id = id;
         heap[n].severity = s;
         heap[n].order = o;
-
         up(n++);
     }
 
@@ -277,10 +275,8 @@ void addEmergencyCase(HospitalData& d, int id, const string& user)
     }
 
     int s;
-
     cout << "Severity (1 Stable, 2 Moderate, 3 Severe, 4 Critical): ";
     cin >> s;
-
     if (s < 1 || s > 4)
     {
         cout << "Invalid severity.\n";
