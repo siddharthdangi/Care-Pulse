@@ -43,7 +43,6 @@ static bool authenticate(HospitalData& d)
         u.role = "Staff";
         u.salt = makeSalt();
         u.passwordHash = passwordDigest(u.salt, p);
-
         d.users[d.userCount++] = u;
 
         currentUser = u.username;
@@ -79,7 +78,6 @@ static bool authenticate(HospitalData& d)
 
                 currentUser = name;
                 currentRole = d.users[i].role;
-
                 auditAction(currentUser, currentRole, "Logged in");
 
                 return true;
@@ -89,7 +87,6 @@ static bool authenticate(HospitalData& d)
         cout << "Invalid username or password. Attempts left: "
              << 4 - tries << '\n';
     }
-
     cout << "Too many failed attempts. Restart the program to try again.\n";
 
     return false;
