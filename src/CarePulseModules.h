@@ -9,8 +9,10 @@ using namespace std;
 const int MAX_RECORDS = 200;
 const int MAX_UNDO = 20;
 
-struct person
+
+class Person
 {
+public:
     int id, age;
     string name;
 
@@ -20,8 +22,10 @@ struct person
     virtual ~Person();
 };
 
-struct Patient : Person
+
+class Patient : public Person
 {
+public:
     string diagnosis, status;
     int severity, doctorID, bedID, queueOrder, emergencyOrder;
     bool admitted;
@@ -34,8 +38,10 @@ struct Patient : Person
     string role() const override;
 };
 
-struct Doctor : Person
+
+class Doctor : public Person
 {
+public:
     string specialization;
 
     Doctor()
@@ -45,8 +51,10 @@ struct Doctor : Person
     string role() const override;
 };
 
-struct Staff : Person
+
+class Staff : public Person
 {
+public:
     string jobRole;
 
     Staff()
@@ -56,8 +64,10 @@ struct Staff : Person
     string role() const override;
 };
 
-struct Bed
+
+class Bed
 {
+public:
     int id, roomID, patientID;
     string roomType;
     bool occupied;
@@ -67,8 +77,10 @@ struct Bed
     }
 };
 
-struct Appointment
+
+class Appointment
 {
+public:
     int patientID;
     string date, time, note;
 
@@ -77,8 +89,10 @@ struct Appointment
     }
 };
 
-struct Bill
+
+class Bill
 {
+public:
     int patientID;
     double subtotal, tax, total;
     string description;
@@ -88,13 +102,17 @@ struct Bill
     }
 };
 
-struct User
+
+class User
 {
+public:
     string username, salt, passwordHash, role;
 };
 
-struct HospitalData
+
+class HospitalData
 {
+public:
     Patient patients[MAX_RECORDS];
     int patientCount;
 
@@ -116,11 +134,12 @@ struct HospitalData
     int nextArrival, averageConsultMinutes;
 
     HospitalData() : patientCount(0), doctorCount(0), bedCount(0),
-                     appointmentCount(0), billCount(0), userCount(0),
-                     nextArrival(1), averageConsultMinutes(15)
+                    appointmentCount(0), billCount(0), userCount(0),
+                    nextArrival(1), averageConsultMinutes(15)
     {
     }
 };
+
 
 string severityName(int severity);
 
@@ -130,14 +149,16 @@ string passwordDigest(const string& salt, const string& password);
 
 bool validPassword(const string& password);
 
+
 int findPatientIndex(const HospitalData& d, int id);
 
 int findDoctorIndex(const HospitalData& d, int id);
 
 int findBedIndex(const HospitalData& d, int id);
 
+
 void auditAction(const string& username, const string& role,
-                 const string& action);
+                const string& action);
 
 void saveAll(const HospitalData& d);
 
@@ -145,9 +166,11 @@ void loadAll(HospitalData& d);
 
 void rebuildStructures(const HospitalData& d);
 
+
 void linkedListAdd(const Patient& p);
 void linkedListRebuild(const HospitalData& d);
 void linkedListDisplay();
+
 
 void opdRebuild(const HospitalData& d);
 bool opdContains(int id);
@@ -157,6 +180,7 @@ int opdServe();
 void opdRemove(int id);
 void opdDisplay(const HospitalData& d);
 
+
 void emergencyRebuild(const HospitalData& d);
 bool emergencyContains(int id);
 int emergencyCount();
@@ -165,29 +189,36 @@ int emergencyServe();
 void emergencyRemove(int id);
 void emergencyDisplay(const HospitalData& d);
 
+
 void bstRebuild(const HospitalData& d);
 bool bstContains(int id);
 
+
 void hashRebuild(const HospitalData& d);
 int hashDoctorIndex(int id);
+
 
 void pushUndo(const HospitalData& d, const string& action);
 bool undoLast(HospitalData& d, string& action);
 void clearUndo();
 void showUndoHistory();
 
+
 void showBeds(const HospitalData& d);
 void addBeds(HospitalData& d, const string& username);
 void allocateBed(HospitalData& d, int patientID, const string& username);
 void releaseBed(HospitalData& d, int bedID, const string& username);
 
+
 void createBill(HospitalData& d, int patientID, const string& username);
 void showBills(const HospitalData& d);
+
 
 void addAppointment(HospitalData& d, int patientID, const string& username);
 void showAppointments(const HospitalData& d);
 void searchAppointment(const HospitalData& d, int patientID);
 void showReminders(const HospitalData& d);
+
 
 void registerPatient(HospitalData& d, const string& username);
 void addDoctor(HospitalData& d, const string& username);
@@ -195,14 +226,18 @@ void editPatient(HospitalData& d, const string& username);
 void showPatient(const HospitalData& d, int id);
 void showAllPatients(const HospitalData& d);
 
+
 void showDailySummary(const HospitalData& d);
 void showAlerts(const HospitalData& d);
 void showJourney(const HospitalData& d, int id);
 
+
 void addToOPD(HospitalData& d, int id, const string& username);
 void serveOPD(HospitalData& d, const string& username);
 
+
 void addEmergencyCase(HospitalData& d, int id, const string& username);
 void serveEmergencyCase(HospitalData& d, const string& username);
+
 
 #endif
